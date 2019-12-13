@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         self.import_graph_button.setObjectName("import_graph_button")
         self.horizontalLayout.addWidget(self.import_graph_button)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.frameLabel = QtWidgets.QLabel(self.centralWidget)
+        self.frameLabel = GraphView(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -57,3 +57,4 @@ class Ui_MainWindow(object):
         self.frameLabel.setText(_translate("MainWindow", "Imported graph will be displayed here."))
 
 
+from graphview import GraphView

@@ -27,9 +27,16 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="import_graph_button">
+       <widget class="QPushButton" name="importButton">
         <property name="text">
          <string>Import graph</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="solveButton">
+        <property name="text">
+         <string>Solve</string>
         </property>
        </widget>
       </item>

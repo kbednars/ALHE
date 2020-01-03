@@ -28,9 +28,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.import_graph_button = QtWidgets.QPushButton(self.centralWidget)
-        self.import_graph_button.setObjectName("import_graph_button")
-        self.horizontalLayout.addWidget(self.import_graph_button)
+        self.importButton = QtWidgets.QPushButton(self.centralWidget)
+        self.importButton.setObjectName("importButton")
+        self.horizontalLayout.addWidget(self.importButton)
+        self.solveButton = QtWidgets.QPushButton(self.centralWidget)
+        self.solveButton.setObjectName("solveButton")
+        self.horizontalLayout.addWidget(self.solveButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.frameLabel = GraphView(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
@@ -53,7 +56,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Ant Colony Graph Solver"))
-        self.import_graph_button.setText(_translate("MainWindow", "Import graph"))
+        self.importButton.setText(_translate("MainWindow", "Import graph"))
+        self.solveButton.setText(_translate("MainWindow", "Solve"))
         self.frameLabel.setText(_translate("MainWindow", "Imported graph will be displayed here."))
 
 

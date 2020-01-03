@@ -15,6 +15,7 @@ def onImportGraphClicked():
     if graphPath == "":
         return
     print(graphPath)
+    myapp.ui.frameLabel.setGraph(None)
     try:
         global graph
         graph = nx.read_gml(graphPath)
@@ -26,8 +27,16 @@ def onImportGraphClicked():
 
 def onSolveClicked():
     if graph is not None:
-        ant = AntColony(5, 12, 0.4, 0.5, 0.25, 1, toArrayGraph(graph))
-        print(ant.antSolver())
+        weightedAdjacencyArray, nodeKeysList = toArrayGraph(graph)
+        ant = AntColony(myapp.ui.antsQuantitySpinBox.value(),
+                        myapp.ui.generationsQuantitySpinBox.value(),
+                        myapp.ui.alphaSpinBox.value(),
+                        myapp.ui.betaSpinBox.value(),
+                        myapp.ui.evaportationRatioSpinBox.value(),
+                        myapp.ui.evaportationRatioSpinBox.value(),
+                        weightedAdjacencyArray)
+        path, cost = ant.antSolver()
+        myapp.ui.frameLabel.setBestPath(path, nodeKeysList)
 
 
 if __name__ == '__main__':

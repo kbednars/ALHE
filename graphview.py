@@ -7,16 +7,28 @@ from PyQt5.QtGui import *
 class GraphView(QtWidgets.QLabel):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.setStyleSheet('QFrame {background-color:white;}')
         self.begin = QtCore.QPoint()
         self.end = QtCore.QPoint()
         self.nodes = None
+        self.bestPath = None
+        self.nodeKeysList = None
         self.edges = None
 
     def setGraph(self, graph: nx.Graph):
-        self.nodes = graph.nodes()._nodes
-        self.edges = graph.edges()._adjdict
-        self.setText("")
+        if graph is None:
+            self.nodes = None
+            self.bestPath = None
+            self.nodeKeysList = None
+            self.edges = None
+        else:
+            self.nodes = graph.nodes()._nodes
+            self.edges = graph.edges()._adjdict
+            self.setText("")
+
+    def setBestPath(self, bestPath, nodeKeysList):
+        self.bestPath = bestPath
+        self.nodeKeysList = nodeKeysList
+        self.repaint()
 
     # returns node coordinates with added padding
     def getCoordinates(self, nodeName):
@@ -39,3 +51,10 @@ class GraphView(QtWidgets.QLabel):
             for key in self.nodes:
                 self.getCoordinates(key)
                 painter.drawText(self.getCoordinates(key), key)
+
+        painter.setPen(Qt.green)
+        if self.bestPath:
+            for index in range(0, len(self.bestPath) - 1):
+                startPoint = self.getCoordinates(self.nodeKeysList[index])
+                endPoint = self.getCoordinates(self.nodeKeysList[index + 1])
+                painter.drawLine(startPoint, endPoint)

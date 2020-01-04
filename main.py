@@ -19,6 +19,7 @@ def onImportGraphClicked():
     try:
         global graph
         graph = nx.read_gml(graphPath)
+        graph = graph.to_undirected()
         myapp.ui.frameLabel.setGraph(graph)
     except nx.NetworkXError:
         myapp.showErrorDialog("The input cannot be parsed.")
@@ -36,6 +37,7 @@ def onSolveClicked():
                         myapp.ui.evaportationRatioSpinBox.value(),
                         weightedAdjacencyArray)
         path, cost = ant.antSolver()
+        print(path, cost)
         myapp.ui.frameLabel.setBestPath(path, nodeKeysList)
 
 

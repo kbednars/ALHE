@@ -55,6 +55,6 @@ class GraphView(QtWidgets.QLabel):
         painter.setPen(Qt.green)
         if self.bestPath:
             for index in range(0, len(self.bestPath) - 1):
-                startPoint = self.getCoordinates(self.nodeKeysList[index])
-                endPoint = self.getCoordinates(self.nodeKeysList[index + 1])
+                startPoint = self.getCoordinates(self.nodeKeysList[self.bestPath[index]])
+                endPoint = self.getCoordinates(self.nodeKeysList[self.bestPath[index + 1]])
                 painter.drawLine(startPoint, endPoint)

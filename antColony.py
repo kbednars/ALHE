@@ -46,13 +46,13 @@ class AntColony():
             ants = []
             for i in range(self.antsCountity):
                 ants.append(Ant(self, 0, 4))
-
+            
             # Symulacja sciezki kazdej mrowki
             for i in range(len(ants)):
                 while (ants[i].end != 1):
                     ants[i].nextNode()
                 ants[i].delta = 1 / ants[i].routeCost
-                # Sprawdzanei jakosci znalezionej sciezki przez dana mrowke
+                # Sprawdzanie jakosci znalezionej sciezki przez dana mrowke
                 if ants[i].routeCost < self.bestAntValue:
                     self.bestAntValue = ants[i].routeCost
                     self.bestRoute = ants[i].route
@@ -101,14 +101,19 @@ class Ant():
 
         randNumber = random.random()
 
+        pickedNode = -1
         for i, probability in enumerate(probabilities):
             randNumber -= probability
             if randNumber <= 0:
                 pickedNode = allowed[i]
                 break
-        self.routeCost += self.colony.graph[self.actualNode][pickedNode]
-        self.actualNode = pickedNode
-        self.route.append(self.actualNode)
+        if pickedNode == -1:
+            self.end = 1
+            return
+        else:   
+            self.routeCost += self.colony.graph[self.actualNode][pickedNode]
+            self.actualNode = pickedNode
+            self.route.append(self.actualNode)
 
         if self.actualNode == self.finishNode:
             self.end = 1
@@ -130,4 +135,4 @@ class Ant():
 
     # Funkcja heurystyczna
     def heuristic(self, wezel):
-        return 0.9
+        return 1

@@ -21,6 +21,10 @@ def onImportGraphClicked():
         graph = nx.read_gml(graphPath)
         graph = graph.to_undirected()
         myapp.ui.frameLabel.setGraph(graph)
+        myapp.ui.startNodeComboBox.clear()
+        myapp.ui.endNodeComboBox.clear()
+        myapp.ui.startNodeComboBox.addItems(graph.nodes())
+        myapp.ui.endNodeComboBox.addItems(graph.nodes())
     except nx.NetworkXError:
         myapp.showErrorDialog("The input cannot be parsed.")
         return
@@ -38,8 +42,8 @@ def onSolveClicked():
                         weightedAdjacencyArray,
                         graph,
                         nodeKeysList,
-                        startNode,
-                        finishNode)
+                        myapp.ui.startNodeComboBox.currentIndex(),
+                        myapp.ui.endNodeComboBox.currentIndex())
         path, cost = ant.antSolver()
         print(path, cost)
         myapp.ui.frameLabel.setBestPath(path, nodeKeysList)

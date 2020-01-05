@@ -19,6 +19,8 @@ class GraphView(QtWidgets.QLabel):
         self.maxY = 0
 
     def setGraph(self, graph: nx.Graph):
+        self.maxX = 0
+        self.maxY = 0
         if graph is None:
             self.nodes = None
             self.bestPath = None

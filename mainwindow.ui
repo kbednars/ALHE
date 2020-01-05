@@ -254,7 +254,7 @@
     <item>
      <widget class="GraphView" name="frameLabel">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+       <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -262,7 +262,7 @@
       <property name="minimumSize">
        <size>
         <width>1</width>
-        <height>1</height>
+        <height>200</height>
        </size>
       </property>
       <property name="maximumSize">

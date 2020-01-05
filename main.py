@@ -35,7 +35,11 @@ def onSolveClicked():
                         myapp.ui.betaSpinBox.value(),
                         myapp.ui.evaportationRatioSpinBox.value(),
                         myapp.ui.evaportationRatioSpinBox.value(),
-                        weightedAdjacencyArray)
+                        weightedAdjacencyArray,
+                        graph,
+                        nodeKeysList,
+                        startNode,
+                        finishNode)
         path, cost = ant.antSolver()
         print(path, cost)
         myapp.ui.frameLabel.setBestPath(path, nodeKeysList)

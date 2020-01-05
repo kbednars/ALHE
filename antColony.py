@@ -1,10 +1,11 @@
 import random
 import math
 import numpy as np
+import networkx as nx
 
 
 class AntColony():
-    def __init__(self, antsCountity, generations, alfa, beta, evaporationRatio, pheromoneZero, graph):
+    def __init__(self, antsCountity, generations, alfa, beta, evaporationRatio, pheromoneZero, graph, network_cor, nodeKeyList, startNode, finishNode):
         """
         :antsCountity:
         :generations:
@@ -14,6 +15,10 @@ class AntColony():
         :bestAntValue - najlepsza uzyskana jakosc sciezki:
         :bestRoute - najlepsza znaleziona sciezka:
         :pheromoneZero - wartosc poczatkowa ilosci feromonu:
+        :network_cor - lista zawierajaca wspolrzedne wezlow: 
+        :nodeKeyList - lista wezlow i odpowiadajacych im identtyfikatorom:
+        :startNode - wezel poczatkowy:
+        :finishNode - wezel koncowy:
         """
 
         self.antsCountity = antsCountity
@@ -23,6 +28,10 @@ class AntColony():
         self.evaporationRatio = evaporationRatio
         self.pheromoneZero = pheromoneZero
         self.graph = graph
+        self.network_cor = network_cor
+        self.nodeKeyList = nodeKeyList
+        self.startNode = startNode
+        self.finishNode = finishNode
         self.bestAntValue = math.inf
         self.bestRoute = []
         self.bestDelta = 0.0
@@ -45,7 +54,7 @@ class AntColony():
             # Tworzenie mrowek
             ants = []
             for i in range(self.antsCountity):
-                ants.append(Ant(self, 0, 4))
+                ants.append(Ant(self, self.startNode, self.finishNode))
             
             # Symulacja sciezki kazdej mrowki
             for i in range(len(ants)):
@@ -96,27 +105,35 @@ class Ant():
 
                 if inRoute == 0:
                     allowed.append(i)
+        lastMove = 0
+        for i in allowed:
+            if(i == self.finishNode):
+                lastMove = 1
 
-        probabilities = self.nodeProbabilities(allowed)
+        if lastMove == 0:
+            probabilities = self.nodeProbabilities(allowed)
+            randNumber = random.random()
 
-        randNumber = random.random()
-
-        pickedNode = -1
-        for i, probability in enumerate(probabilities):
-            randNumber -= probability
-            if randNumber <= 0:
-                pickedNode = allowed[i]
-                break
-        if pickedNode == -1:
+            pickedNode = -1
+            for i, probability in enumerate(probabilities):
+                randNumber -= probability
+                if randNumber <= 0:
+                    pickedNode = allowed[i]
+                    break
+            if pickedNode == -1:
+                self.routeCost += self.heuristic(self.actualNode)**2
+                self.end = 1
+                return
+            else:   
+                self.routeCost += self.colony.graph[self.actualNode][pickedNode]
+                self.actualNode = pickedNode
+                self.route.append(self.actualNode)
+        else:
+            self.routeCost += self.colony.graph[self.actualNode][self.finishNode]
+            self.route.append(self.finishNode)
             self.end = 1
             return
-        else:   
-            self.routeCost += self.colony.graph[self.actualNode][pickedNode]
-            self.actualNode = pickedNode
-            self.route.append(self.actualNode)
 
-        if self.actualNode == self.finishNode:
-            self.end = 1
 
     # Obliczenie prawdpodobniestwa wyboru danego wezla
     def nodeProbabilities(self, allowed):
@@ -135,4 +152,8 @@ class Ant():
 
     # Funkcja heurystyczna
     def heuristic(self, wezel):
-        return 1
+        x1 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[wezel]]['graphics']['x']
+        y1 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[wezel]]['graphics']['y']
+        x2 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[self.finishNode]]['graphics']['x']
+        y2 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[self.finishNode]]['graphics']['y']
+        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)

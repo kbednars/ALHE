@@ -44,11 +44,10 @@ class AntColony():
         self.pheromoneMatrix = np.random.randn(*self.graph.shape)
         for i in range(len(self.pheromoneMatrix)):
             for j in range(len(self.pheromoneMatrix[i])):
-                self.pheromoneMatrix[i][j] = self.pheromoneZero
-
-        # ants = np.array([])
-        # for i in range(self.antsCountity):
-        #    ants.append(Ant(self, network, [0,0], [3,3]))
+                if self.graph[i][j] != 0:
+                    self.pheromoneMatrix[i][j] = self.pheromoneZero
+                else:
+                    self.pheromoneMatrix[i][j] = 0
 
         for iter in range(self.generations):
             # Tworzenie mrowek
@@ -61,10 +60,19 @@ class AntColony():
                 while (ants[i].end != 1):
                     ants[i].nextNode()
                 ants[i].delta = 1 / ants[i].routeCost
+                ants[i].routePheromone()
                 # Sprawdzanie jakosci znalezionej sciezki przez dana mrowke
                 if ants[i].routeCost < self.bestAntValue:
                     self.bestAntValue = ants[i].routeCost
                     self.bestRoute = ants[i].route
+                    self.bestDelta = ants[i].delta
+                    self.bestDeltaRoute = np.random.randn(*self.graph.shape)
+                    for i in range(len(self.bestDeltaRoute)):
+                        for j in range(len(self.bestDeltaRoute[i])):
+                            self.bestDeltaRoute[i][j] = 0
+
+                    for i in range(len(self.bestRoute)-1):
+                        self.bestDeltaRoute[self.bestRoute[i]][self.bestRoute[i+1]] = self.bestDelta
 
             # Aktualizacja macierzy feromonu
             self.pheromoneUpdate(ants)
@@ -72,13 +80,13 @@ class AntColony():
         return self.bestRoute, self.bestAntValue
 
     def pheromoneUpdate(self, ants):
-        deltaSum = 0.0
-        for k in range(self.antsCountity):
-            deltaSum += ants[k].delta
         for i in range(len(self.pheromoneMatrix)):
             for j in range(len(self.pheromoneMatrix[i])):
-                self.pheromoneMatrix[i][j] += (1 - self.evaporationRatio) * self.pheromoneMatrix[i][
-                    j] + deltaSum + self.evaporationRatio * self.bestDelta
+                self.pheromoneMatrix[i][j] = (1 - self.evaporationRatio) * self.pheromoneMatrix[i][j] 
+                for k in range(len(ants)):
+                    self.pheromoneMatrix[i][j] += ants[k].pheromoneRouteMatrix[i][j]
+                
+                self.pheromoneMatrix[i][j] += self.evaporationRatio * self.bestDeltaRoute[i][j]
 
 
 class Ant():
@@ -149,6 +157,16 @@ class Ant():
             probabilities[i] = probabilities[i] / probabilitySum
 
         return probabilities
+
+    # Funckja krawedzie na ktorych mrowka pozostawila feromon
+    def routePheromone(self):
+        self.pheromoneRouteMatrix = np.random.randn(*self.colony.graph.shape)
+        for i in range(len(self.pheromoneRouteMatrix)):
+            for j in range(len(self.pheromoneRouteMatrix[i])):
+                self.pheromoneRouteMatrix[i][j] = 0
+
+        for i in range(len(self.route)-1):
+            self.pheromoneRouteMatrix[self.route[i]][self.route[i+1]] = self.delta
 
     # Funkcja heurystyczna
     def heuristic(self, wezel):

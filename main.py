@@ -38,7 +38,7 @@ def onSolveClicked():
                         myapp.ui.alphaSpinBox.value(),
                         myapp.ui.betaSpinBox.value(),
                         myapp.ui.evaportationRatioSpinBox.value(),
-                        myapp.ui.evaportationRatioSpinBox.value(),
+                        myapp.ui.pheromoneZeroSpinBox.value(),
                         weightedAdjacencyArray,
                         graph,
                         nodeKeysList,

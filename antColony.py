@@ -1,11 +1,17 @@
 import random
+import time
+
 import math
 import numpy as np
-import networkx as nx
+from PyQt5 import QtCore
 
 
-class AntColony():
-    def __init__(self, antsCountity, generations, alfa, beta, evaporationRatio, pheromoneZero, graph, network_cor, nodeKeyList, startNode, finishNode):
+class AntColony(QtCore.QThread):
+    pheromoneSignal = QtCore.pyqtSignal(object, object)
+    bestPathSignal = QtCore.pyqtSignal(object, object)
+
+    def __init__(self, antsCountity, generations, alfa, beta, evaporationRatio, pheromoneZero, graph, network_cor,
+                 nodeKeyList, startNode, finishNode, generationInterval):
         """
         :antsCountity:
         :generations:
@@ -21,6 +27,7 @@ class AntColony():
         :finishNode - wezel koncowy:
         """
 
+        super().__init__()
         self.antsCountity = antsCountity
         self.generations = generations
         self.alfa = alfa
@@ -35,8 +42,9 @@ class AntColony():
         self.bestAntValue = math.inf
         self.bestRoute = []
         self.bestDelta = 0.0
+        self.generationInterval = generationInterval
 
-    def antSolver(self):
+    def run(self):
         """
         :network - graf w postaci macierzy, odpowiadajacy sieci miast wraz z wagami krawedzi:
         """
@@ -49,12 +57,12 @@ class AntColony():
                 else:
                     self.pheromoneMatrix[i][j] = 0
 
-        for iter in range(self.generations):
+        for generationNumber in range(self.generations):
             # Tworzenie mrowek
             ants = []
             for i in range(self.antsCountity):
                 ants.append(Ant(self, self.startNode, self.finishNode))
-            
+
             # Symulacja sciezki kazdej mrowki
             for i in range(len(ants)):
                 while (ants[i].end != 1):
@@ -71,21 +79,24 @@ class AntColony():
                         for j in range(len(self.bestDeltaRoute[i])):
                             self.bestDeltaRoute[i][j] = 0
 
-                    for i in range(len(self.bestRoute)-1):
-                        self.bestDeltaRoute[self.bestRoute[i]][self.bestRoute[i+1]] = self.bestDelta
+                    for i in range(len(self.bestRoute) - 1):
+                        self.bestDeltaRoute[self.bestRoute[i]][self.bestRoute[i + 1]] = self.bestDelta
 
             # Aktualizacja macierzy feromonu
-            self.pheromoneUpdate(ants)
+            self.pheromoneUpdate(ants, generationNumber)
 
-        return self.bestRoute, self.bestAntValue
+        self.bestPathSignal.emit(self.bestRoute, self.bestAntValue)
 
-    def pheromoneUpdate(self, ants):
+    def pheromoneUpdate(self, ants, gen):
+        self.pheromoneSignal.emit(self.pheromoneMatrix, gen)
+        if self.generationInterval > 0:
+            time.sleep(self.generationInterval)
         for i in range(len(self.pheromoneMatrix)):
             for j in range(len(self.pheromoneMatrix[i])):
-                self.pheromoneMatrix[i][j] = (1 - self.evaporationRatio) * self.pheromoneMatrix[i][j] 
+                self.pheromoneMatrix[i][j] = (1 - self.evaporationRatio) * self.pheromoneMatrix[i][j]
                 for k in range(len(ants)):
                     self.pheromoneMatrix[i][j] += ants[k].pheromoneRouteMatrix[i][j]
-                
+
                 self.pheromoneMatrix[i][j] += self.evaporationRatio * self.bestDeltaRoute[i][j]
 
 
@@ -115,7 +126,7 @@ class Ant():
                     allowed.append(i)
         lastMove = 0
         for i in allowed:
-            if(i == self.finishNode):
+            if (i == self.finishNode):
                 lastMove = 1
 
         if lastMove == 0:
@@ -129,10 +140,10 @@ class Ant():
                     pickedNode = allowed[i]
                     break
             if pickedNode == -1:
-                self.routeCost += self.heuristic(self.actualNode)**2
+                self.routeCost += self.heuristic(self.actualNode) ** 2
                 self.end = 1
                 return
-            else:   
+            else:
                 self.routeCost += self.colony.graph[self.actualNode][pickedNode]
                 self.actualNode = pickedNode
                 self.route.append(self.actualNode)
@@ -141,7 +152,6 @@ class Ant():
             self.route.append(self.finishNode)
             self.end = 1
             return
-
 
     # Obliczenie prawdpodobniestwa wyboru danego wezla
     def nodeProbabilities(self, allowed):
@@ -165,8 +175,8 @@ class Ant():
             for j in range(len(self.pheromoneRouteMatrix[i])):
                 self.pheromoneRouteMatrix[i][j] = 0
 
-        for i in range(len(self.route)-1):
-            self.pheromoneRouteMatrix[self.route[i]][self.route[i+1]] = self.delta
+        for i in range(len(self.route) - 1):
+            self.pheromoneRouteMatrix[self.route[i]][self.route[i + 1]] = self.delta
 
     # Funkcja heurystyczna
     def heuristic(self, wezel):

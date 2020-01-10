@@ -33,6 +33,61 @@
         </property>
        </widget>
       </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Generation interval [s]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="intervalSpinBox">
+        <property name="maximum">
+         <double>9.990000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="generationCounter">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Current generation: 0/100</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -97,7 +152,7 @@
          <number>9999</number>
         </property>
         <property name="value">
-         <number>12</number>
+         <number>100</number>
         </property>
        </widget>
       </item>
@@ -225,7 +280,7 @@
          <double>0.010000000000000</double>
         </property>
         <property name="value">
-         <double>1.000000000000000</double>
+         <double>0.050000000000000</double>
         </property>
        </widget>
       </item>
@@ -307,6 +362,9 @@
       </property>
       <property name="cursor">
        <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget { background:rgb(200,200,200); }</string>
       </property>
       <property name="text">
        <string>Imported graph will be displayed here.</string>

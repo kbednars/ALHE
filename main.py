@@ -8,13 +8,15 @@ from graphConverter import toArrayGraph
 from myform import MyForm
 
 graph = None
+nodeKeysList = None
+thread = None
+generationsCount = 0
 
 
 def onImportGraphClicked():
     graphPath = myapp.openFileNamesDialog()
     if graphPath == "":
         return
-    print(graphPath)
     myapp.ui.frameLabel.setGraph(None)
     try:
         global graph
@@ -32,7 +34,11 @@ def onImportGraphClicked():
 
 def onSolveClicked():
     if graph is not None:
+        global nodeKeysList
+        global generationsCount
+        generationsCount = myapp.ui.generationsQuantitySpinBox.value()
         weightedAdjacencyArray, nodeKeysList = toArrayGraph(graph)
+        myapp.ui.frameLabel.setBestPath(None, nodeKeysList)
         ant = AntColony(myapp.ui.antsQuantitySpinBox.value(),
                         myapp.ui.generationsQuantitySpinBox.value(),
                         myapp.ui.alphaSpinBox.value(),
@@ -43,10 +49,27 @@ def onSolveClicked():
                         graph,
                         nodeKeysList,
                         myapp.ui.startNodeComboBox.currentIndex(),
-                        myapp.ui.endNodeComboBox.currentIndex())
-        path, cost = ant.antSolver()
-        print(path, cost)
-        myapp.ui.frameLabel.setBestPath(path, nodeKeysList)
+                        myapp.ui.endNodeComboBox.currentIndex(),
+                        myapp.ui.intervalSpinBox.value()
+                        )
+        global thread
+        if thread:
+            thread.terminate()
+        ant.pheromoneSignal.connect(onPheromoneUpdate)
+        ant.bestPathSignal.connect(onBestPath)
+        thread = ant
+        ant.start()
+
+
+def onPheromoneUpdate(pheromoneMatrix, generation):
+    myapp.ui.frameLabel.setPheromones(pheromoneMatrix)
+    myapp.ui.generationCounter.setText("Current generation: {0}/{1}".format(generation + 1, generationsCount))
+
+
+def onBestPath(path, cost):
+    print(path, cost)
+    myapp.ui.frameLabel.setBestPath(path, nodeKeysList)
+    myapp.ui.generationCounter.setText("Current generation: 0/0")
 
 
 if __name__ == '__main__':

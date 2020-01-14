@@ -117,13 +117,7 @@ class Ant():
         allowed = []
         for i in range(len(self.colony.graph)):
             if self.colony.graph[self.actualNode][i] != 0:
-                inRoute = 0
-                for j in range(len(self.route)):
-                    if self.route[j] == i:
-                        inRoute = 1
-
-                if inRoute == 0:
-                    allowed.append(i)
+                allowed.append(i)
         lastMove = 0
         for i in allowed:
             if (i == self.finishNode):
@@ -139,14 +133,9 @@ class Ant():
                 if randNumber <= 0:
                     pickedNode = allowed[i]
                     break
-            if pickedNode == -1:
-                self.routeCost += self.heuristic(self.actualNode) ** 2
-                self.end = 1
-                return
-            else:
-                self.routeCost += self.colony.graph[self.actualNode][pickedNode]
-                self.actualNode = pickedNode
-                self.route.append(self.actualNode)
+            self.routeCost += self.colony.graph[self.actualNode][pickedNode]
+            self.actualNode = pickedNode
+            self.route.append(self.actualNode)
         else:
             self.routeCost += self.colony.graph[self.actualNode][self.finishNode]
             self.route.append(self.finishNode)
@@ -184,4 +173,4 @@ class Ant():
         y1 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[wezel]]['graphics']['y']
         x2 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[self.finishNode]]['graphics']['x']
         y2 = self.colony.network_cor.nodes()._nodes[self.colony.nodeKeyList[self.finishNode]]['graphics']['y']
-        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        return self.colony.pheromoneZero/(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))

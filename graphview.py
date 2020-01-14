@@ -30,6 +30,7 @@ class GraphView(QtWidgets.QLabel):
             self.edges = None
             self.pheromoneMatrix = None
             self.maxPheromone = None
+            self.minPheromone = None
             self.maxX = 0
             self.maxY = 0
         else:
@@ -48,6 +49,7 @@ class GraphView(QtWidgets.QLabel):
     def setPheromones(self, pheromoneMatrix):
         self.pheromoneMatrix = pheromoneMatrix
         self.maxPheromone = self.pheromoneMatrix.max()
+        self.minPheromone = self.pheromoneMatrix.min()
         self.repaint()
 
     # returns node coordinates with added padding, scaled to fit in current window size
@@ -83,7 +85,7 @@ class GraphView(QtWidgets.QLabel):
                         endIndex = self.nodeKeysList.index(endKey)
                         pheromoneQuantity = self.pheromoneMatrix[startIndex][endIndex] + \
                                             self.pheromoneMatrix[endIndex][startIndex]
-                        coefficient = (pheromoneQuantity / (2 * self.maxPheromone))
+                        coefficient = ((pheromoneQuantity - 2*self.minPheromone) / (2 * self.maxPheromone- 2*self.minPheromone))
                         if coefficient > 1:
                             coefficient = 1
                         lineWidth = 10 * coefficient
